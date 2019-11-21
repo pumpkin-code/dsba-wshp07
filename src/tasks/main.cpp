@@ -30,27 +30,30 @@
  * newVec size should be the same as obtained from toCountSurvived
  ******************************************************************************/
 
+// Solution by K. Rudakov
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
 #include <random>
 
-
-
+// type aliases definition
 typedef std::vector<std::string> VecNames;
 
-VecNames toCountSurvived(std::istream& input_file);
+// function prototypes definition
+VecNames toCountSurvived(std::istream& inputFile);
 void printVec(const VecNames& aliveNames);
-std::string genThreeDigitNumber(const int& random_state);
+std::string genThreeDigitNumber(int randomState);
+
 
 int main ()
 {
     const std::string INP_FILE_NAME = "/Users/kirill/Documents/Кирилл Рудаков/Учеба/Преподавание/C++/untitled1/tasks/input.csv";
-    std::ifstream input_file;
-    input_file.open(INP_FILE_NAME);
+    std::ifstream inputFile;
+    inputFile.open(INP_FILE_NAME);
 
-    VecNames aliveNames = toCountSurvived(input_file);
+    VecNames aliveNames = toCountSurvived(inputFile);
     printVec(aliveNames);
 
 
@@ -61,30 +64,31 @@ int main ()
     while (size > 0)
     {
         newVec.push_back(genThreeDigitNumber(size));
-        size--;
+        --size;
     }
 
     printVec(newVec);
 }
 
-std::vector<std::string> toCountSurvived(std::istream& input_file)
+//std::vector<std::string> toCountSurvived(std::istream& input_file) // also ok
+VecNames toCountSurvived(std::istream& inputFile)
 {
     std::string line;
     VecNames aliveNames;
 
-    while (!input_file.eof() && input_file.good ())
+    while (!inputFile.eof() && inputFile.good())
     {
-        std::getline (input_file, line);
+        std::getline(inputFile, line);
         std::stringstream ss(line);
         std::string token;
 
-        int token_i = 0;
+        int tokenI = 0;
         bool isSurvived = false;
-        while (!ss.eof () && ss.good ())
+        while (!ss.eof () && ss.good())
         {
-            std::getline (ss, token,',');
+            std::getline (ss, token, ',');
 
-            if (token_i == 1)
+            if (tokenI == 1)                            // process survived attribute
             {
                 short survived;
                 std::stringstream t(token);
@@ -93,15 +97,14 @@ std::vector<std::string> toCountSurvived(std::istream& input_file)
                     isSurvived = true;
             }
 
-            if (token_i == 3 && isSurvived)
+            if (tokenI == 3 && isSurvived)              // process full name
             {
                 std::string surname;
                 std::stringstream surStream(token);
-                std::getline(surStream, surname,';');
+                std::getline(surStream, surname, ';');  // need only surname
                 aliveNames.push_back(surname);
             }
-
-            ++token_i;
+            ++tokenI;
         }
     }
 
@@ -116,19 +119,20 @@ void printVec(const VecNames& aliveNames)
         std::cout << i++ << ") " << name<<'\n';
 }
 
-std::string genThreeDigitNumber(const int& random_state){
+
+std::string genThreeDigitNumber(int randomState)
+{
     std::mt19937 gen;
-    gen.seed(random_state);
-    std::uniform_int_distribution<int> distr_0_9(0,9);
-    std::uniform_int_distribution<int> distr_1_9(1,9);
+    gen.seed(randomState);
+    std::uniform_int_distribution<int> distr_0_9(0, 9);
+    std::uniform_int_distribution<int> distr_1_9(1, 9);
 
     std::stringstream numberStream;
     for (int i = 0; i < 3; i++)
         numberStream <<  (i > 0 ? distr_0_9(gen) : distr_1_9 (gen));
 
     std::string number;
-    std::getline(numberStream,number);
+    std::getline(numberStream, number);
+
     return number;
-
-
 }
